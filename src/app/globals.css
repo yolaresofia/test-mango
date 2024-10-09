@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'HKNova';
+  src: url('/fonts/hk-nova/HKNova-Medium.woff') format('woff');
+  font-weight: medium;
+  font-style: normal;
+}
