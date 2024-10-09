@@ -91,7 +91,7 @@ const Range: FC<RangeProps> = ({
         <div
           key={index}
           data-testid="range-bullet"
-          className={`absolute w-4 h-4 bg-blue-600 rounded-full ${
+          className={`absolute w-4 h-4 bg-blue-600 rounded-full hover:h-5 hover:w-5 ${
             isGrabbing ? "cursor-grabbing" : "cursor-grab"
           }`}
           style={{

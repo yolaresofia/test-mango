@@ -45,7 +45,7 @@ const Exercise1: React.FC = () => {
     const newValues = [...values];
     if (index === 0 && inputValues[0] <= values[1]) {
       newValues[0] = inputValues[0];
-    } else if (index === 1 && inputValues[1] <= values[1]) {
+    }  else if (index === 1 && inputValues[1] >= values[0] && inputValues[1] <= values[1]) {
       newValues[1] = inputValues[1];
     }
     setValues(newValues);
@@ -63,8 +63,8 @@ const Exercise1: React.FC = () => {
         <div>
           {showMinInput ? (
             <input
-              id="minValue"
               type="number"
+              data-testid="minValueInput"
               value={inputValues ? inputValues[0] : ""}
               onChange={({ target }) =>
                 handleInputChange(Number(target.value), 0)
@@ -78,8 +78,8 @@ const Exercise1: React.FC = () => {
           ) : (
             <label
               onClick={() => setShowMinInput(!showMinInput)}
+              data-testid="minValueLabel"
               className="mr-4"
-              htmlFor="minValue"
             >
               €{values[0]}
             </label>
@@ -89,6 +89,7 @@ const Exercise1: React.FC = () => {
           {showMaxInput ? (
             <input
               type="number"
+              data-testid="maxValueInput"
               value={inputValues ? inputValues[1] : ""}
               onChange={({ target }) =>
                 handleInputChange(Number(target.value), 1)
@@ -103,7 +104,7 @@ const Exercise1: React.FC = () => {
             <label
               onClick={() => setShowMaxInput(!showMaxInput)}
               className="mr-4"
-              htmlFor="minValue"
+              data-testid="maxValueLabel"
             >
               €{values[values.length - 1]}
             </label>

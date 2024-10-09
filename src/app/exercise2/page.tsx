@@ -29,10 +29,6 @@ const Exercise2: React.FC = () => {
       <h1>Exercise 2: Fixed Values Range</h1>
       {error && <p>Couldn&apos;t fetch data</p>}
       <Range values={values} min={min} max={max} isFixedRange={true} />
-      <div className="pt-12">
-        <p>Min Value: {min}</p>
-        <p>Max Value: {max}</p>
-      </div>
     </div>
   );
 };

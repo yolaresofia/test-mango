@@ -1,9 +1,7 @@
-
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Exercise2 from "./page";
 
 global.fetch = jest.fn();
-
 
 describe("<Exercise2 />", () => {
   beforeEach(() => {
@@ -23,34 +21,69 @@ describe("<Exercise2 />", () => {
     expect(screen.getByText("Values not found")).toBeInTheDocument();
   });
 
-  it("should render the range component and values when data is loaded", async () => {
+  it("should display value after data has been fetched", async () => {
     render(<Exercise2 />);
+
     await waitFor(() => {
       expect(
         screen.getByText("Exercise 2: Fixed Values Range")
       ).toBeInTheDocument();
-      expect(screen.getByText("Min Value: 1.99")).toBeInTheDocument();
-      expect(screen.getByText("Max Value: 70.99")).toBeInTheDocument();
-      expect(screen.getByRole("heading")).toHaveTextContent(
-        "Exercise 2: Fixed Values Range"
-      );
+      expect(screen.getByText("1.99")).toBeInTheDocument();
+      expect(screen.getByText("70.99")).toBeInTheDocument();
     });
   });
 
-  it("should ensure min value is less than or equal to max value", async () => {
+  it("should allow only selecting fixed values in the range", async () => {
     render(<Exercise2 />);
+  
     await waitFor(() => {
-      const minValueText = screen.getByText(/Min Value: (\d+(\.\d+)?)/i);
-      const maxValueText = screen.getByText(/Max Value: (\d+(\.\d+)?)/i);
+      const rangeBullets = screen.getAllByTestId("range-bullet");
+      expect(rangeBullets.length).toBe(2);
 
-      const minValue = parseFloat(
-        minValueText.textContent?.replace("Min Value: ", "") || "0"
-      );
-      const maxValue = parseFloat(
-        maxValueText.textContent?.replace("Max Value: ", "") || "0"
-      );
+      const bulletValues = rangeBullets.map(bullet => bullet.style.left);
 
-      expect(minValue).toBeLessThanOrEqual(maxValue);
+      const fixedPositions = ["0%", "100%"];
+      bulletValues.forEach((value, index) => {
+        expect(value).toBe(fixedPositions[index]);
+      });
     });
   });
+  
+  it("should display fixed values as non-editable labels", async () => {
+    render(<Exercise2 />);
+  
+    await waitFor(() => {
+      expect(screen.getByText("1.99")).toBeInTheDocument();
+      expect(screen.getByText("70.99")).toBeInTheDocument();
+      const inputs = screen.queryAllByRole("textbox");
+      expect(inputs.length).toBe(0);
+    });
+  });
+
+  it("should ensure min value never exceeds max value and vice versa", async () => {
+    render(<Exercise2 />);
+
+    await waitFor(() => {
+      const rangeBullets = screen.getAllByTestId("range-bullet");
+
+      const minBullet = rangeBullets[0];
+      const maxBullet = rangeBullets[1];
+
+      fireEvent.mouseDown(minBullet);
+      fireEvent.mouseMove(document, { clientX: maxBullet.getBoundingClientRect().right + 10 });
+      fireEvent.mouseUp(minBullet);
+
+      const minBulletStyle = minBullet.style.left;
+      const maxBulletStyle = maxBullet.style.left;
+
+      expect(parseFloat(minBulletStyle)).toBeLessThanOrEqual(parseFloat(maxBulletStyle));
+
+      fireEvent.mouseDown(maxBullet);
+      fireEvent.mouseMove(document, { clientX: minBullet.getBoundingClientRect().left - 10 });
+      fireEvent.mouseUp(maxBullet);
+
+      expect(parseFloat(maxBulletStyle)).toBeGreaterThanOrEqual(parseFloat(minBulletStyle));
+    });
+  });
+
 });

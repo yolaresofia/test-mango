@@ -1,4 +1,3 @@
-
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Exercise1 from "./page";
 
@@ -22,14 +21,14 @@ describe("Exercise1 Page", () => {
     expect(screen.getByText("Values not found")).toBeInTheDocument();
   });
 
-  it("should display the fetched data after loading", async () => {
+  it("should display value after data has been fetched", async () => {
     render(<Exercise1 />);
 
     await waitFor(() => {
       expect(screen.getByText("Exercise 1: Normal Range")).toBeInTheDocument();
     });
-    expect(screen.getByLabelText("Min Value:")).toHaveValue(10);
-    expect(screen.getByLabelText("Max Value:")).toHaveValue(100);
+    expect(screen.getByTestId("minValueLabel")).toHaveTextContent("€10");
+    expect(screen.getByTestId("maxValueLabel")).toHaveTextContent("€100");
   });
 
   it("should display 'Values not found' when no values are fetched", async () => {
@@ -44,18 +43,52 @@ describe("Exercise1 Page", () => {
     });
   });
 
+  it("should allow user to change min value", async () => {
+    render(<Exercise1 />);
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("minValueLabel"));
+      const minValueInput = screen.getByTestId(
+        "minValueInput"
+      ) as HTMLInputElement;
+
+      fireEvent.change(minValueInput, { target: { value: "20" } });
+      fireEvent.blur(minValueInput);
+
+      expect(screen.getByTestId("minValueLabel")).toHaveTextContent("€20");
+    });
+  });
+
+  it("should allow user to change max value", async () => {
+    render(<Exercise1 />);
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("maxValueLabel"));
+      const maxValueInput = screen.getByTestId(
+        "maxValueInput"
+      ) as HTMLInputElement;
+
+      fireEvent.change(maxValueInput, { target: { value: "50" } });
+      fireEvent.blur(maxValueInput);
+
+      expect(screen.getByTestId("maxValueLabel")).toHaveTextContent("€50");
+    });
+  });
+
   it("should not allow min value to exceed max value", async () => {
     render(<Exercise1 />);
 
     await waitFor(() => {
-      const minValueInput = screen.getByLabelText(
-        "Min Value:"
+      fireEvent.click(screen.getByTestId("maxValueLabel"));
+      fireEvent.click(screen.getByTestId("minValueLabel"));
+      const minValueInput = screen.getByTestId(
+        "minValueInput"
       ) as HTMLInputElement;
-      fireEvent.change(minValueInput, { target: { value: "150" } });
+
+      fireEvent.change(minValueInput, { target: { value: "1500" } });
       fireEvent.blur(minValueInput);
-      expect(Number(minValueInput.value)).toBeLessThanOrEqual(
-        Number((screen.getByLabelText("Max Value:") as HTMLInputElement).value)
-      );
+
+      expect(screen.getByTestId("minValueLabel")).toHaveTextContent("€10");
     });
   });
 
@@ -63,27 +96,65 @@ describe("Exercise1 Page", () => {
     render(<Exercise1 />);
 
     await waitFor(() => {
-      const maxValueInput = screen.getByLabelText(
-        "Max Value:"
+      fireEvent.click(screen.getByTestId("maxValueLabel"));
+      const maxValueInput = screen.getByTestId(
+        "maxValueInput"
       ) as HTMLInputElement;
+
       fireEvent.change(maxValueInput, { target: { value: "5" } });
       fireEvent.blur(maxValueInput);
-      expect(Number(maxValueInput.value)).toBeGreaterThanOrEqual(
-        Number((screen.getByLabelText("Min Value:") as HTMLInputElement).value)
-      );
+      expect(screen.getByTestId("maxValueLabel")).toHaveTextContent("€100");
     });
   });
 
-  it("should save input value on Enter key press", async () => {
+  it("should enlarge bullet and change cursor to draggable on hover", async () => {
     render(<Exercise1 />);
 
     await waitFor(() => {
-      const minValueInput = screen.getByLabelText(
-        "Min Value:"
-      ) as HTMLInputElement;
-      fireEvent.change(minValueInput, { target: { value: "25" } });
-      fireEvent.keyDown(minValueInput, { key: "Enter", code: "Enter" });
-      expect(minValueInput.value).toBe("25");
+      const bullet = screen.getAllByTestId("range-bullet")[0];
+
+      fireEvent.mouseOver(bullet);
+
+      expect(bullet).toHaveClass("hover:h-5 hover:w-5");
+      expect(bullet).toHaveClass("cursor-grab");
+    });
+  });
+  
+  it("should not allow dragging the min bullet to surpass the max bullet", async () => {
+    render(<Exercise1 />);
+
+    await waitFor(() => {
+      const rangeBullets = screen.getAllByTestId("range-bullet");
+
+      const minBullet = rangeBullets[0];
+      const maxBullet = rangeBullets[1];
+
+      fireEvent.mouseDown(minBullet);
+      fireEvent.mouseMove(document, {
+        clientX: maxBullet.getBoundingClientRect().right + 10,
+      });
+      fireEvent.mouseUp(minBullet);
+
+      const minBulletLeft = parseFloat(minBullet.style.left);
+      const maxBulletLeft = parseFloat(maxBullet.style.left);
+
+      expect(minBulletLeft).toBeLessThanOrEqual(maxBulletLeft);
+    });
+  });
+
+  it("should change cursor to grabbing when bullet is dragged", async () => {
+    render(<Exercise1 />);
+
+    await waitFor(() => {
+      const bullet = screen.getAllByTestId("range-bullet")[0];
+
+      fireEvent.mouseDown(bullet);
+
+      expect(bullet).toHaveClass("cursor-grabbing");
+
+      fireEvent.mouseUp(bullet);
+
+      expect(bullet).toHaveClass("cursor-grab");
     });
   });
 });
