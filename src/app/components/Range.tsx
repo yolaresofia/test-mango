@@ -81,6 +81,7 @@ const Range: FC<RangeProps> = ({ values, min, max, isFixedRange, onChange }) => 
       {rangeValues.map((value, index) => (
         <div
           key={index}
+          data-testid="range-bullet"
           className="absolute w-4 h-4 bg-blue-600 rounded-full cursor-pointer"
           style={{
             left: `${getPercentage(value)}%`,

@@ -37,7 +37,7 @@ const Exercise1: React.FC = () => {
     setInputValues(newInputValues);
   };
 
-  const handleInputBlur = (index: number) => {
+  const saveInputValue = (index: number) => {
     if (!inputValues || !values) return;
     const newValues = [...values];
     if (index === 0 && inputValues[0] <= values[1]) {
@@ -46,6 +46,12 @@ const Exercise1: React.FC = () => {
       newValues[1] = inputValues[1];
     }
     setValues(newValues);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Enter') {
+      saveInputValue(index);
+    }
   };
 
   if (!values || values.length === 0) return <p>Values not found</p>;
@@ -63,7 +69,8 @@ const Exercise1: React.FC = () => {
             type="number"
             value={inputValues ? inputValues[0] : ''}
             onChange={({ target }) => handleInputChange(Number(target.value), 0)}
-            onBlur={() => handleInputBlur(0)}
+            onBlur={() => saveInputValue(0)}
+            onKeyDown={(e) => handleKeyDown(e, 0)}
             className="border p-2 ml-2"
           />
         </label>
@@ -73,7 +80,8 @@ const Exercise1: React.FC = () => {
             type="number"
             value={inputValues ? inputValues[1] : ''}
             onChange={({ target }) => handleInputChange(Number(target.value), 1)}
-            onBlur={() => handleInputBlur(1)}
+            onBlur={() => saveInputValue(1)}
+            onKeyDown={(e) => handleKeyDown(e, 1)}
             className="border p-2 ml-2"
           />
         </label>
