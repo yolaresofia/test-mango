@@ -2,8 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import { RangeProps } from "../types";
 import { FC } from "react";
 
-const Range: FC<RangeProps> = ({ values, min, max, isFixedRange, onChange }) => {
+const Range: FC<RangeProps> = ({
+  values,
+  min,
+  max,
+  isFixedRange,
+  onChange,
+}) => {
   const [rangeValues, setRangeValues] = useState<number[]>([min, max]);
+  const [isGrabbing, setIsGrabbing] = useState(false);
   const rangeRef = useRef<HTMLDivElement>(null);
   const totalValues = values.length - 1;
 
@@ -70,10 +77,12 @@ const Range: FC<RangeProps> = ({ values, min, max, isFixedRange, onChange }) => 
     const onMouseUp = () => {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
+      setIsGrabbing(false);
     };
 
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
+    setIsGrabbing(true);
   };
 
   return (
@@ -82,7 +91,9 @@ const Range: FC<RangeProps> = ({ values, min, max, isFixedRange, onChange }) => 
         <div
           key={index}
           data-testid="range-bullet"
-          className="absolute w-4 h-4 bg-blue-600 rounded-full cursor-pointer"
+          className={`absolute w-4 h-4 bg-blue-600 rounded-full ${
+            isGrabbing ? "cursor-grabbing" : "cursor-grab"
+          }`}
           style={{
             left: `${getPercentage(value)}%`,
             transform: "translateX(-50%)",
