@@ -25,8 +25,7 @@ const Exercise2: React.FC = () => {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div className="p-40">
-      <h1>Exercise 2: Fixed Values Range</h1>
+    <div className="p-40 font-hknova">
       {error && <p>Couldn&apos;t fetch data</p>}
       <Range values={values} min={min} max={max} isFixedRange={true} />
     </div>

@@ -25,10 +25,9 @@ describe("Exercise1 Page", () => {
     render(<Exercise1 />);
 
     await waitFor(() => {
-      expect(screen.getByText("Exercise 1: Normal Range")).toBeInTheDocument();
+      expect(screen.getByTestId("minValueLabel")).toHaveTextContent("€10");
+      expect(screen.getByTestId("maxValueLabel")).toHaveTextContent("€100");
     });
-    expect(screen.getByTestId("minValueLabel")).toHaveTextContent("€10");
-    expect(screen.getByTestId("maxValueLabel")).toHaveTextContent("€100");
   });
 
   it("should display 'Values not found' when no values are fetched", async () => {

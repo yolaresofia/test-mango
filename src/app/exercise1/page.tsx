@@ -51,12 +51,21 @@ const Exercise1: React.FC = () => {
     setValues(newValues);
   };
 
+  const handleBlur = (index: number) => {
+    if (index === 0) {
+      saveInputValue(index);
+      setShowMinInput(false);
+    } else {
+      saveInputValue(1);
+      setShowMaxInput(false);
+    }
+  }
+
   if (!values || values.length === 0) return <p>Values not found</p>;
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div className="p-40">
-      <h1 className="mb-10">Exercise 1: Normal Range</h1>
+    <div className="p-40 font-hknova">
       {error && <p>Couldn&apos;t fetch data</p>}
       <Range values={values} min={min} max={max} onChange={handleRangeChange} />
       <div className="mb-6 flex justify-between pt-8">
@@ -69,11 +78,8 @@ const Exercise1: React.FC = () => {
               onChange={({ target }) =>
                 handleInputChange(Number(target.value), 0)
               }
-              onBlur={() => {
-                saveInputValue(0);
-                setShowMinInput(false);
-              }}
-              className="border p-2 ml-2"
+              onBlur={() => handleBlur(0)}
+              className="border-2 border-black rounded-md p-1.5 ml-1.5 focus:outline-none"
             />
           ) : (
             <label
@@ -94,10 +100,7 @@ const Exercise1: React.FC = () => {
               onChange={({ target }) =>
                 handleInputChange(Number(target.value), 1)
               }
-              onBlur={() => {
-                saveInputValue(1);
-                setShowMaxInput(!showMaxInput);
-              }}
+              onBlur={() => handleBlur(1)}
               className="border p-2 ml-2"
             />
           ) : (

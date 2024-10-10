@@ -86,17 +86,18 @@ const Range: FC<RangeProps> = ({
   };
 
   return (
-    <div className="relative h-2 bg-gray-300" ref={rangeRef}>
+    <div className="relative h-2 bg-gray-300 rounded-md font-hknova" ref={rangeRef}>
       {rangeValues.map((value, index) => (
         <div
           key={index}
           data-testid="range-bullet"
-          className={`absolute w-4 h-4 bg-blue-600 rounded-full hover:h-5 hover:w-5 ${
+          className={`absolute w-6 h-6 border-2 border-black bg-white rounded-full hover:h-7 hover:w-7 ${
             isGrabbing ? "cursor-grabbing" : "cursor-grab"
           }`}
           style={{
             left: `${getPercentage(value)}%`,
-            transform: "translateX(-50%)",
+            transform: "translate(-50%, -50%)",
+            top: "50%",
           }}
           onMouseDown={() => handleBulletDrag(index)}
         />
@@ -104,7 +105,7 @@ const Range: FC<RangeProps> = ({
       {isFixedRange && (
         <div className="flex justify-between mt-2 pt-6">
           {values.map((value, index) => (
-            <span key={index} className="text-xs text-gray-500">
+            <span key={index} className="text-xs text-gray-500 select-none">
               {value}
             </span>
           ))}

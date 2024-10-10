@@ -25,9 +25,6 @@ describe("<Exercise2 />", () => {
     render(<Exercise2 />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Exercise 2: Fixed Values Range")
-      ).toBeInTheDocument();
       expect(screen.getByText("1.99")).toBeInTheDocument();
       expect(screen.getByText("70.99")).toBeInTheDocument();
     });
