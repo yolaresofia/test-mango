@@ -46,13 +46,9 @@ const Range: FC<RangeProps> = ({
     if (!range) return;
 
     const rangeWidth = range.offsetWidth;
-    const rangeLeft = range.getBoundingClientRect().left;
-
-    const moveAt = (pageX: number): number => {
-      const baseValue = min + ((pageX - rangeLeft) / rangeWidth) * (max - min);
-      return isFixedRange
-        ? adjustToFixedValue(pageX, rangeWidth)
-        : adjustToDynamicValue(baseValue);
+    const moveAt = (clientX: number): number => {
+      const baseValue = min + ((clientX - range.getBoundingClientRect().left) / rangeWidth) * (max - min);
+      return isFixedRange ? adjustToFixedValue(clientX, rangeWidth) : adjustToDynamicValue(baseValue);
     };
 
     const validateValue = (value: number): number => {
@@ -63,8 +59,11 @@ const Range: FC<RangeProps> = ({
       return value;
     };
 
-    const onMouseMove = (moveEvent: MouseEvent) => {
-      const newValue = validateValue(moveAt(moveEvent.pageX));
+    const onMove = (moveEvent: MouseEvent | TouchEvent) => {
+      const clientX = (moveEvent as TouchEvent).touches
+        ? (moveEvent as TouchEvent).touches[0].clientX
+        : (moveEvent as MouseEvent).clientX;
+      const newValue = validateValue(moveAt(clientX));
       const newValues = [...rangeValues];
       newValues[index] = newValue;
       setRangeValues(newValues);
@@ -74,15 +73,27 @@ const Range: FC<RangeProps> = ({
       }
     };
 
-    const onMouseUp = () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
+    const onEnd = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onEnd);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onEnd);
       setIsGrabbing(false);
     };
 
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onEnd);
+    document.addEventListener("touchmove", onMove);
+    document.addEventListener("touchend", onEnd);
     setIsGrabbing(true);
+  };
+
+  const handleMouseDown = (index: number) => () => {
+    handleBulletDrag(index);
+  };
+
+  const handleTouchStart = (index: number) => () => {
+    handleBulletDrag(index);
   };
 
   return (
@@ -99,7 +110,8 @@ const Range: FC<RangeProps> = ({
             transform: "translate(-50%, -50%)",
             top: "50%",
           }}
-          onMouseDown={() => handleBulletDrag(index)}
+          onMouseDown={handleMouseDown(index)}
+          onTouchStart={handleTouchStart(index)}
         />
       ))}
       {isFixedRange && (

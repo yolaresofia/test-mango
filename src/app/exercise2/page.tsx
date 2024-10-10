@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useEffect, useState } from "react";
 import Range from "../components/Range";
 import { fetchValues } from "../hooks/useFetchValues";
@@ -25,9 +25,11 @@ const Exercise2: React.FC = () => {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div className="p-40 font-hknova">
-      {error && <p>Couldn&apos;t fetch data</p>}
-      <Range values={values} min={min} max={max} isFixedRange={true} />
+    <div className="h-screen flex w-screen md:p-40 p-8">
+      <div className="font-hknova w-full m-auto">
+        {error && <p>Couldn&apos;t fetch data</p>}
+        <Range values={values} min={min} max={max} isFixedRange={true} />
+      </div>
     </div>
   );
 };

@@ -65,7 +65,8 @@ const Exercise1: React.FC = () => {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div className="p-40 font-hknova">
+    <div className="h-screen flex w-screen md:p-40 p-8">
+       <div className="font-hknova w-full m-auto">
       {error && <p>Couldn&apos;t fetch data</p>}
       <Range values={values} min={min} max={max} onChange={handleRangeChange} />
       <div className="mb-6 flex justify-between pt-8">
@@ -115,6 +116,8 @@ const Exercise1: React.FC = () => {
         </div>
       </div>
     </div>
+    </div>
+   
   );
 };
 
