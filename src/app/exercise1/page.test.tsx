@@ -114,7 +114,7 @@ describe("Exercise1 Page", () => {
 
       fireEvent.mouseOver(bullet);
 
-      expect(bullet).toHaveClass("hover:h-5 hover:w-5");
+      expect(bullet).toHaveClass("hover:h-7 hover:w-7");
       expect(bullet).toHaveClass("cursor-grab");
     });
   });
